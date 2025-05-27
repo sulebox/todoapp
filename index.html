@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進捗応援！ToDoアプリ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 上寄せに変更してスクロールに対応 */
+            min-height: 100vh;
+            background-color: #FDF6EC; /* Clubhouse風: 明るいクリーム色の背景 */
+            color: #2F2F2F; /* Clubhouse風: ダークグレーのテキスト */
+            padding-top: 2rem; /* 上部に余白 */
+            padding-bottom: 2rem; /* 下部に余白 */
+        }
+        .app-container {
+            background-color: #FFFFFF; /* Clubhouse風: 白いコンテナ背景 */
+            padding: 2rem;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08), 0 4px 8px -3px rgba(0, 0, 0, 0.05); /* よりソフトな影 */
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+        #gif-container { /* GIFコンテナのスタイル */
+            margin-bottom: 1.5rem; /* mb-6 */
+            text-align: center; /* コンテナ内で画像を中央寄せ */
+        }
+        #gif-container img {
+            display: inline-block; /* or block with margin auto */
+            max-width: 100%; /* GIFが大きすぎる場合に備える */
+            height: auto; /* アスペクト比を維持 */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        .input-group {
+            margin-bottom: 1rem; /* mb-4 */
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem; /* mb-2 */
+            font-weight: 600; /* font-semibold */
+            color: #555555; /* 少し薄いグレー */
+        }
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 0.85rem; /* p-3.5 */
+            border: 1px solid #E0E0E0; /* Clubhouse風: 明るいグレーの境界線 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-weight: 400;
+        }
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: #F2994A; /* Clubhouse風: アクセントオレンジ */
+            box-shadow: 0 0 0 2px rgba(242, 153, 74, 0.3);
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem;
+            margin-bottom: 0.65rem; /* mb-2.5 */
+            background-color: #FFFBF5; /* オフホワイトのアイテム背景 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #F5EADD; /* アイテム境界線 */
+            transition: background-color 0.3s;
+            text-align: left;
+        }
+        .todo-item.completed {
+            background-color: #E6F4EA; /* Clubhouse風: 完了時はソフトなグリーン */
+            text-decoration: line-through;
+            color: #3C8C5A; /* Clubhouse風: 濃いめのグリーンテキスト */
+        }
+        .todo-item.completed label {
+            color: #3C8C5A;
+        }
+        .todo-item input[type="checkbox"] {
+            margin-right: 0.85rem; /* mr-3.5 */
+            width: 1.15rem; /* w-4.5 */
+            height: 1.15rem; /* h-4.5 */
+            accent-color: #F2994A; /* Clubhouse風: アクセントオレンジ */
+            flex-shrink: 0; /* チェックボックスが縮まないように */
+        }
+        .todo-item label {
+            flex-grow: 1;
+            font-weight: 400;
+            color: #2F2F2F;
+        }
+        button {
+            background-color: #F2994A; /* Clubhouse風: アクセントオレンジ */
+            color: white;
+            padding: 0.85rem 1.75rem; /* py-3.5 px-7 */
+            border: none;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 1rem; /* mt-4 */
+            width: 100%;
+        }
+        button:hover {
+            background-color: #E68A3E; /* 少し濃いオレンジ */
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        button:disabled {
+            background-color: #FADCB3; /* 薄いオレンジ */
+            cursor: not-allowed;
+        }
+        .hidden {
+            display: none;
+        }
+        #message-area {
+            margin-top: 1rem; /* mt-4 */
+            color: #D9534F; /* ややソフトな赤色 */
+            font-weight: 600; /* font-semibold */
+            min-height: 1.5em;
+        }
+        h1 {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #2F2F2F; 
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        h2 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            color: #2F2F2F;
+            margin-bottom: 1.25rem; /* mb-5 */
+        }
+    </style>
+</head>
+<body>
+    <audio id="baki-sound" src="https://sulebox.github.io/todoapp/baki.m4a" preload="auto"></audio>
+    <audio id="levelup-sound" src="https://sulebox.github.io/todoapp/levelup.m4a" preload="auto"></audio>
+
+    <div class="app-container">
+        <h1>進捗応援！ToDoアプリ</h1>
+
+        <div id="gif-container">
+            <img id="puyon-gif" src="https://sulebox.github.io/todoapp/puyon.gif" alt="応援キャラクター">
+        </div>
+
+        <div id="input-container">
+            <h2 class="text-xl font-semibold mb-4">新しいToDoを3つ設定しよう！</h2>
+            <div class="input-group">
+                <label for="todo-input-1">ToDo 1:</label>
+                <input type="text" id="todo-input-1" placeholder="例：牛乳を買う">
+            </div>
+            <div class="input-group">
+                <label for="todo-input-2">ToDo 2:</label>
+                <input type="text" id="todo-input-2" placeholder="例：部屋の掃除">
+            </div>
+            <div class="input-group">
+                <label for="todo-input-3">ToDo 3:</label>
+                <input type="text" id="todo-input-3" placeholder="例：資料作成">
+            </div>
+            <button id="submit-todos">ToDoを開始！</button>
+        </div>
+
+        <div id="todo-list-container" class="hidden">
+            <h2 class="text-xl font-semibold mb-4">今日のToDoリスト</h2>
+            <div id="todo-items-wrapper">
+                </div>
+        </div>
+        
+        <div id="message-area"></div>
+    </div>
+
+    <script type="module">
+        // Firebase SDKのインポート
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, addDoc, collection, query, getDocs, serverTimestamp, onSnapshot, limit, orderBy as firestoreOrderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase設定 (Canvas環境から提供されるグローバル変数を使用、なければ空オブジェクト)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-todo-app-v2'; 
+        
+        // Firebaseアプリの初期化
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // DOM要素
+        const gifContainer = document.getElementById('gif-container');
+        const inputContainer = document.getElementById('input-container');
+        const todoListContainer = document.getElementById('todo-list-container');
+        const todoInput1 = document.getElementById('todo-input-1');
+        const todoInput2 = document.getElementById('todo-input-2');
+        const todoInput3 = document.getElementById('todo-input-3');
+        const submitTodosButton = document.getElementById('submit-todos');
+        const todoItemsWrapper = document.getElementById('todo-items-wrapper');
+        const messageArea = document.getElementById('message-area');
+        
+        // 音声要素
+        const bakiAudio = document.getElementById('baki-sound');
+        const levelupAudio = document.getElementById('levelup-sound');
+
+
+        let currentUserId = null; // 匿名認証のUIDを保持
+        let activeTodoDocId = null;
+        let activeTodoData = null;
+        let unsubscribeSnapshot = null;
+
+        // --- サウンド再生関数 (m4aファイル用) ---
+        function playBakiSound() {
+            if (bakiAudio) {
+                bakiAudio.currentTime = 0;
+                bakiAudio.play().catch(error => console.warn("baki.m4aの再生に失敗 (ファイルURL確認):", error));
+            } else { console.warn("bakiAudio element not found"); }
+        }
+
+        function playLevelUpSound() {
+            if (levelupAudio) {
+                levelupAudio.currentTime = 0;
+                levelupAudio.play().catch(error => console.warn("levelup.m4aの再生に失敗 (ファイルURL確認):", error));
+            } else { console.warn("levelupAudio element not found"); }
+        }
+        
+        // --- UI制御 ---
+        function showInputView() {
+            inputContainer.classList.remove('hidden');
+            todoListContainer.classList.add('hidden');
+            todoInput1.value = '';
+            todoInput2.value = '';
+            todoInput3.value = '';
+            messageArea.textContent = '';
+            activeTodoDocId = null;
+            activeTodoData = null;
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+                unsubscribeSnapshot = null;
+            }
+        }
+
+        function showTodoView() {
+            inputContainer.classList.add('hidden');
+            todoListContainer.classList.remove('hidden');
+            messageArea.textContent = '';
+        }
+
+        // --- ToDoリストのレンダリング ---
+        function renderTodoList(todoData) {
+            if (!todoData) return;
+            activeTodoData = todoData;
+            todoItemsWrapper.innerHTML = ''; 
+
+            const tasks = [
+                { id: 'task1', text: todoData.task1.text, completed: todoData.task1.completed },
+                { id: 'task2', text: todoData.task2.text, completed: todoData.task2.completed },
+                { id: 'task3', text: todoData.task3.text, completed: todoData.task3.completed }
+            ];
+
+            tasks.forEach(task => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('todo-item');
+                if (task.completed) {
+                    itemDiv.classList.add('completed');
+                }
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `checkbox-${task.id}`;
+                checkbox.checked = task.completed;
+                checkbox.dataset.taskId = task.id;
+                checkbox.disabled = task.completed;
+
+                const label = document.createElement('label');
+                label.htmlFor = `checkbox-${task.id}`;
+                label.textContent = task.text;
+
+                itemDiv.appendChild(checkbox);
+                itemDiv.appendChild(label);
+                todoItemsWrapper.appendChild(itemDiv);
+
+                if (!task.completed) {
+                    checkbox.addEventListener('change', handleTodoToggle);
+                }
+            });
+        }
+
+        // --- Firestore処理 ---
+        function getTodosCollectionPath(userId) {
+            // Firestoreのセキュリティルールに合わせたパス構造
+            // /artifacts/{appId}/users/{userId}/{your_collection_name}
+            return `/artifacts/${appId}/users/${userId}/items`;
+        }
+        
+        async function handleTodoToggle(event) {
+            if (!activeTodoDocId || !currentUserId) return;
+            
+            const checkbox = event.target;
+            const taskId = checkbox.dataset.taskId;
+            const isCompleted = checkbox.checked;
+
+            checkbox.disabled = true; 
+
+            if (isCompleted) {
+                playBakiSound();
+            }
+
+            try {
+                const todoDocRef = doc(db, getTodosCollectionPath(currentUserId), activeTodoDocId);
+                const updateData = {};
+                updateData[`${taskId}.completed`] = isCompleted;
+                
+                await updateDoc(todoDocRef, updateData);
+                
+                if (activeTodoData && activeTodoData[taskId]) {
+                     activeTodoData[taskId].completed = isCompleted;
+                }
+
+                const allTasksLocallyCompleted = activeTodoData.task1.completed && 
+                                                 activeTodoData.task2.completed && 
+                                                 activeTodoData.task3.completed;
+
+                if (allTasksLocallyCompleted && !activeTodoData.allCompleted) {
+                    await updateDoc(todoDocRef, { allCompleted: true });
+                }
+
+            } catch (error) {
+                console.error("ToDoの更新に失敗しました:", error);
+                messageArea.textContent = "ToDoの更新に失敗しました。";
+                checkbox.checked = !isCompleted; 
+                checkbox.disabled = false; 
+            }
+        }
+
+        submitTodosButton.addEventListener('click', async () => {
+            const t1 = todoInput1.value.trim();
+            const t2 = todoInput2.value.trim();
+            const t3 = todoInput3.value.trim();
+
+            if (!t1 || !t2 || !t3) {
+                messageArea.textContent = '3つのToDoすべてを入力してください！';
+                return;
+            }
+            if (!currentUserId) {
+                messageArea.textContent = 'ユーザー情報の初期化に失敗しました。リロードしてください。';
+                return;
+            }
+
+            submitTodosButton.disabled = true;
+            messageArea.textContent = 'ToDoを保存中...';
+
+            const newTodoSet = {
+                task1: { text: t1, completed: false },
+                task2: { text: t2, completed: false },
+                task3: { text: t3, completed: false },
+                allCompleted: false,
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, getTodosCollectionPath(currentUserId)), newTodoSet);
+                activeTodoDocId = docRef.id;
+                setupSnapshotListener(activeTodoDocId); 
+                showTodoView(); 
+            } catch (error) {
+                console.error("ToDoセットの保存に失敗しました:", error);
+                messageArea.textContent = "ToDoの保存に失敗しました。もう一度試してください。";
+            } finally {
+                submitTodosButton.disabled = false;
+            }
+        });
+
+        function setupSnapshotListener(docId) {
+            if (unsubscribeSnapshot) { 
+                unsubscribeSnapshot();
+            }
+            if (!currentUserId || !docId) return;
+
+            const todoDocRef = doc(db, getTodosCollectionPath(currentUserId), docId);
+            unsubscribeSnapshot = onSnapshot(todoDocRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.data();
+                    activeTodoData = data; 
+                    renderTodoList(data); 
+
+                    if (data.allCompleted) {
+                        playLevelUpSound();
+                        messageArea.textContent = '全タスク完了！素晴らしい！次のToDoを設定しましょう。';
+                        
+                        setTimeout(() => {
+                            if (activeTodoData && activeTodoData.allCompleted) { 
+                                showInputView();
+                            }
+                        }, 2500); 
+                    }
+                } else {
+                    console.log("監視対象のToDoドキュメントが見つかりません。入力画面に戻ります。");
+                    showInputView(); 
+                }
+            }, (error) => {
+                console.error("スナップショットリスナーエラー:", error);
+                messageArea.textContent = "データの同期中にエラーが発生しました。";
+            });
+        }
+        
+        async function loadLatestTodoSet(userId) {
+            messageArea.textContent = "ToDoを読み込み中...";
+            try {
+                const q = query(
+                    collection(db, getTodosCollectionPath(userId)), 
+                    firestoreOrderBy("createdAt", "desc"), 
+                    limit(1)
+                );
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const latestDoc = querySnapshot.docs[0];
+                    const data = latestDoc.data();
+                    if (!data.allCompleted) {
+                        activeTodoDocId = latestDoc.id;
+                        setupSnapshotListener(activeTodoDocId);
+                        showTodoView();
+                        return; 
+                    }
+                }
+                showInputView();
+            } catch (error) {
+                console.error("最新のToDoセットの読み込みに失敗:", error); 
+                messageArea.textContent = "ToDoの読み込みに失敗しました。";
+                showInputView();
+            }
+        }
+
+        // --- 初期化処理 ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid; 
+                console.log("認証成功。UserID:", currentUserId); 
+                await loadLatestTodoSet(currentUserId);
+            } else {
+                console.log("未認証状態。匿名認証を開始します。"); 
+                try {
+                    await signInAnonymously(auth);
+                    // onAuthStateChangedが再度呼ばれるので、ここでは何もしない
+                } catch (error) {
+                    console.error("匿名認証に失敗:", error);
+                    messageArea.textContent = "認証に失敗しました。アプリを利用できません。";
+                    submitTodosButton.disabled = true;
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
