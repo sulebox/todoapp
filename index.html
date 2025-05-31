@@ -182,9 +182,15 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, updateDoc, addDoc, collection, query, getDocs, serverTimestamp, onSnapshot, limit, orderBy as firestoreOrderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase設定 (Canvas環境から提供されるグローバル変数を使用、なければ空オブジェクト)
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-todo-app-v2'; 
+        const firebaseConfig = {
+        apiKey: "AIzaSyBZ50Fx26xPbatggCCQ2o6rIoTe_cr2WPk", // 実際の値に置き換えてください
+        authDomain: "todoapps-c32f3.firebaseapp.com", // 実際の値に置き換えてください
+        projectId: "odoapps-c32f3", // 実際の値に置き換えてください
+        storageBucket: "todoapps-c32f3.firebasestorage.app", // 実際の値に置き換えてください
+        messagingSenderId: "1014494559609", // 実際の値に置き換えてください
+        appId: "1:1014494559609:web:6a6295b32621f16b5883a8" // 実際の値に置き換えてください
+
+        const appId = 'default-todo-app-v2'
         
         // Firebaseアプリの初期化
         const app = initializeApp(firebaseConfig);
