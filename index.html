@@ -29,6 +29,42 @@
             max-width: 480px;
             text-align: center;
         }
+        h1 { /* タイトル部分のスタイル */
+            font-size: 1.625rem; /* text-2xlより少し小さいくらい (26px) */
+            font-weight: 700; 
+            color: #2F2F2F; 
+            margin-bottom: 0.5rem; 
+            display: flex; 
+            align-items: baseline; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+        }
+        #monster-select-title { /* h1内のプルダウンメニューのスタイル */
+            font-size: 1.625rem; /* h1のフォントサイズに合わせる */
+            font-weight: 700; 
+            color: #2F2F2F; 
+            background-color: transparent;
+            border: none;
+            padding: 0 0.25rem; 
+            margin: 0 0.1rem; 
+            -webkit-appearance: none; 
+            -moz-appearance: none;    
+            appearance: none;          
+            cursor: pointer;
+            line-height: normal; 
+        }
+        #monster-select-title:focus {
+            outline: none;
+            text-decoration: underline; 
+            color: #F2994A;
+        }
+        #app-title-suffix { /* 「のToDoアプリ」部分のスタイル */
+            font-size: 1.625rem; /* h1のフォントサイズに合わせる */
+            font-weight: 700;
+            color: #2F2F2F;
+            line-height: normal;
+        }
+
         #gif-container { 
             margin-bottom: 1.5rem; 
             margin-top: 0.5rem; 
@@ -42,19 +78,19 @@
             border-radius: 0.5rem; 
         }
         #level-display {
-            font-size: 1.25rem; 
+            font-size: 1.5rem; /* text-2xl相当 (24px) に変更 */
             font-weight: 700; 
             color: #F2994A; 
-            margin-bottom: 1rem; /* リセットボタンとの間隔を少し空ける */
+            margin-bottom: 1rem; 
         }
-        #reset-level-button-container { /* リセットボタンを配置するコンテナ */
-            text-align: right; /* ボタンを右寄せにする */
-            margin-top: 1.5rem; /* ToDoリストの下に配置 */
+        #reset-level-button-container { 
+            text-align: center; 
+            margin-top: 2rem; 
             margin-bottom: 0.5rem;
         }
         #reset-level-button { 
-            font-size: 0.875rem; 
-            color: #9ca3af; /* gray-400 */
+            font-size: 0.75rem; 
+            color: #cbd5e1; 
             background-color: transparent;
             border: none;
             text-decoration: underline;
@@ -64,7 +100,7 @@
             transition: color 0.2s;
         }
         #reset-level-button:hover {
-            color: #ef4444; /* red-500 */
+            color: #9ca3af; 
         }
         .input-group {
             margin-bottom: 1rem; 
@@ -152,12 +188,6 @@
             font-weight: 600; 
             min-height: 1.5em;
         }
-        h1 {
-            font-size: 1.75rem; 
-            font-weight: 700; 
-            color: #2F2F2F; 
-            margin-bottom: 0.5rem; 
-        }
         h2 {
             font-size: 1.25rem; 
             font-weight: 700; 
@@ -171,11 +201,18 @@
     <audio id="levelup-sound" src="https://sulebox.github.io/todoapp/levelup.m4a" preload="auto"></audio>
 
     <div class="app-container">
-        <h1>プヨンのToDoアプリ</h1>
+        <h1>
+            <select id="monster-select-title">
+                <option value="https://sulebox.github.io/todoapp/puyon.gif" selected>プヨン</option>
+                <option value="https://sulebox.github.io/todoapp/shef.gif">ｼｪﾌﾚﾗ</option> {/* 表示名を半角カナに変更 */}
+                <option value="https://sulebox.github.io/todoapp/bee.gif">ビープ</option>
+            </select>
+            <span id="app-title-suffix">のToDoアプリ</span>
+        </h1>
         <div id="level-display">Lv. 1</div>
         
         <div id="gif-container">
-            <img id="puyon-gif" src="https://sulebox.github.io/todoapp/puyon.gif" alt="応援キャラクター">
+            <img id="puyon-gif" src="https://sulebox.github.io/todoapp/puyon.gif" alt="プヨンの応援">
         </div>
 
         <div id="input-container">
@@ -232,7 +269,8 @@
         // DOM要素
         const levelDisplay = document.getElementById('level-display'); 
         const resetLevelButton = document.getElementById('reset-level-button'); 
-        const gifContainer = document.getElementById('gif-container');
+        const monsterSelectTitle = document.getElementById('monster-select-title'); 
+        const puyonGifImage = document.getElementById('puyon-gif'); 
         const inputContainer = document.getElementById('input-container');
         const todoListContainer = document.getElementById('todo-list-container');
         const todoInput1 = document.getElementById('todo-input-1');
@@ -252,6 +290,16 @@
         let unsubscribeUserSnapshot = null; 
 
         const MAX_LEVEL = 999;
+
+        // --- モンスター選択とGIF切り替え ---
+        monsterSelectTitle.addEventListener('change', function() {
+            const selectedGifUrl = this.value;
+            if (puyonGifImage) {
+                puyonGifImage.src = selectedGifUrl;
+                const selectedMonsterName = this.options[this.selectedIndex].text;
+                puyonGifImage.alt = `${selectedMonsterName}の応援`; 
+            }
+        });
 
         // --- ユーザーデータ（レベル情報）関連 ---
         function getUserDataRef(userId) {
