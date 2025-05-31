@@ -191,7 +191,10 @@
         appId: "1:1014494559609:web:6a6295b32621f16b5883a8" // 実際の値に置き換えてください
         };
 
-        const appId = firebaseConfig.projectId;
+        // Firestoreのパスで使用するappId (固定文字列に変更)
+        // ★★★重要★★★ Firestoreのセキュリティルールが /artifacts/default-todo-app-v2/... を
+        // 許可するように設定されていることを確認してください。
+        const appId = 'default-todo-app-v2';
         
         // Firebaseアプリの初期化
         const app = initializeApp(firebaseConfig);
