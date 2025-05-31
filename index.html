@@ -13,136 +13,156 @@
             font-family: 'Nunito Sans', sans-serif;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 上寄せに変更してスクロールに対応 */
+            align-items: flex-start; 
             min-height: 100vh;
-            background-color: #FDF6EC; /* Clubhouse風: 明るいクリーム色の背景 */
-            color: #2F2F2F; /* Clubhouse風: ダークグレーのテキスト */
-            padding-top: 2rem; /* 上部に余白 */
-            padding-bottom: 2rem; /* 下部に余白 */
+            background-color: #FDF6EC; 
+            color: #2F2F2F; 
+            padding-top: 2rem; 
+            padding-bottom: 2rem; 
         }
         .app-container {
-            background-color: #FFFFFF; /* Clubhouse風: 白いコンテナ背景 */
+            background-color: #FFFFFF; 
             padding: 2rem;
-            border-radius: 1rem; /* rounded-xl */
-            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08), 0 4px 8px -3px rgba(0, 0, 0, 0.05); /* よりソフトな影 */
+            border-radius: 1rem; 
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08), 0 4px 8px -3px rgba(0, 0, 0, 0.05); 
             width: 100%;
             max-width: 480px;
             text-align: center;
         }
-        #gif-container { /* GIFコンテナのスタイル */
-            margin-bottom: 1.5rem; /* mb-6 */
-            text-align: center; /* コンテナ内で画像を中央寄せ */
+        #gif-container { 
+            margin-bottom: 1.5rem; 
+            margin-top: 0.5rem; 
+            text-align: center; 
         }
         #gif-container img {
             display: inline-block; 
             max-width: 100%; 
-            height: 300px; /* GIFの縦幅を300pxに指定 */
-            object-fit: contain; /* アスペクト比を保ちつつコンテナ内に収める */
-            border-radius: 0.5rem; /* rounded-lg */
+            height: 300px; 
+            object-fit: contain; 
+            border-radius: 0.5rem; 
         }
         #level-display {
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 700; /* font-bold */
-            color: #F2994A; /* アクセントオレンジ */
-            margin-bottom: 1rem;
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: #F2994A; 
+            margin-bottom: 1rem; /* リセットボタンとの間隔を少し空ける */
+        }
+        #reset-level-button-container { /* リセットボタンを配置するコンテナ */
+            text-align: right; /* ボタンを右寄せにする */
+            margin-top: 1.5rem; /* ToDoリストの下に配置 */
+            margin-bottom: 0.5rem;
+        }
+        #reset-level-button { 
+            font-size: 0.875rem; 
+            color: #9ca3af; /* gray-400 */
+            background-color: transparent;
+            border: none;
+            text-decoration: underline;
+            padding: 0.25rem 0.5rem; 
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        #reset-level-button:hover {
+            color: #ef4444; /* red-500 */
         }
         .input-group {
-            margin-bottom: 1rem; /* mb-4 */
+            margin-bottom: 1rem; 
             text-align: left;
         }
         .input-group label {
             display: block;
-            margin-bottom: 0.5rem; /* mb-2 */
-            font-weight: 600; /* font-semibold */
-            color: #555555; /* 少し薄いグレー */
+            margin-bottom: 0.5rem; 
+            font-weight: 600; 
+            color: #555555; 
         }
         .input-group input[type="text"] {
             width: 100%;
-            padding: 0.85rem; /* p-3.5 */
-            border: 1px solid #E0E0E0; /* Clubhouse風: 明るいグレーの境界線 */
-            border-radius: 0.5rem; /* rounded-lg */
+            padding: 0.85rem; 
+            border: 1px solid #E0E0E0; 
+            border-radius: 0.5rem; 
             box-sizing: border-box;
             transition: border-color 0.3s, box-shadow 0.3s;
             font-weight: 400;
         }
         .input-group input[type="text"]:focus {
             outline: none;
-            border-color: #F2994A; /* Clubhouse風: アクセントオレンジ */
+            border-color: #F2994A; 
             box-shadow: 0 0 0 2px rgba(242, 153, 74, 0.3);
         }
         .todo-item {
             display: flex;
             align-items: center;
             padding: 0.85rem;
-            margin-bottom: 0.65rem; /* mb-2.5 */
-            background-color: #FFFBF5; /* オフホワイトのアイテム背景 */
-            border-radius: 0.5rem; /* rounded-lg */
-            border: 1px solid #F5EADD; /* アイテム境界線 */
+            margin-bottom: 0.65rem; 
+            background-color: #FFFBF5; 
+            border-radius: 0.5rem; 
+            border: 1px solid #F5EADD; 
             transition: background-color 0.3s;
             text-align: left;
         }
         .todo-item.completed {
-            background-color: #E6F4EA; /* Clubhouse風: 完了時はソフトなグリーン */
+            background-color: #E6F4EA; 
             text-decoration: line-through;
-            color: #3C8C5A; /* Clubhouse風: 濃いめのグリーンテキスト */
+            color: #3C8C5A; 
         }
         .todo-item.completed label {
             color: #3C8C5A;
         }
         .todo-item input[type="checkbox"] {
-            margin-right: 0.85rem; /* mr-3.5 */
-            width: 1.15rem; /* w-4.5 */
-            height: 1.15rem; /* h-4.5 */
-            accent-color: #F2994A; /* Clubhouse風: アクセントオレンジ */
-            flex-shrink: 0; /* チェックボックスが縮まないように */
+            margin-right: 0.85rem; 
+            width: 1.15rem; 
+            height: 1.15rem; 
+            accent-color: #F2994A; 
+            flex-shrink: 0; 
         }
         .todo-item label {
             flex-grow: 1;
             font-weight: 400;
             color: #2F2F2F;
         }
-        button {
-            background-color: #F2994A; /* Clubhouse風: アクセントオレンジ */
+        button#submit-todos { 
+            background-color: #F2994A; 
             color: white;
-            padding: 0.85rem 1.75rem; /* py-3.5 px-7 */
+            padding: 0.85rem 1.75rem; 
             border: none;
-            border-radius: 0.5rem; /* rounded-lg */
-            font-weight: 700; /* font-bold */
+            border-radius: 0.5rem; 
+            font-weight: 700; 
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
-            margin-top: 1rem; /* mt-4 */
+            margin-top: 1rem; 
             width: 100%;
         }
-        button:hover {
-            background-color: #E68A3E; /* 少し濃いオレンジ */
+        button#submit-todos:hover:not(:disabled) {
+            background-color: #E68A3E; 
         }
-        button:active {
+        button#submit-todos:active:not(:disabled) {
             transform: scale(0.98);
         }
-        button:disabled {
-            background-color: #FADCB3; /* 薄いオレンジ */
+        button#submit-todos:disabled {
+            background-color: #FADCB3; 
             cursor: not-allowed;
         }
         .hidden {
             display: none;
         }
         #message-area {
-            margin-top: 1rem; /* mt-4 */
-            color: #D9534F; /* ややソフトな赤色 */
-            font-weight: 600; /* font-semibold */
+            margin-top: 1rem; 
+            color: #D9534F; 
+            font-weight: 600; 
             min-height: 1.5em;
         }
         h1 {
-            font-size: 1.75rem; /* text-2xl */
-            font-weight: 700; /* font-bold */
+            font-size: 1.75rem; 
+            font-weight: 700; 
             color: #2F2F2F; 
-            margin-bottom: 0.5rem; /* レベル表示のために少し詰める */
+            margin-bottom: 0.5rem; 
         }
         h2 {
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 700; /* font-bold */
+            font-size: 1.25rem; 
+            font-weight: 700; 
             color: #2F2F2F;
-            margin-bottom: 1.25rem; /* mb-5 */
+            margin-bottom: 1.25rem; 
         }
     </style>
 </head>
@@ -153,13 +173,13 @@
     <div class="app-container">
         <h1>プヨンのToDoアプリ</h1>
         <div id="level-display">Lv. 1</div>
-
+        
         <div id="gif-container">
             <img id="puyon-gif" src="https://sulebox.github.io/todoapp/puyon.gif" alt="応援キャラクター">
         </div>
 
         <div id="input-container">
-            <h2 class="text-xl font-semibold mb-4">新しいToDoを3つ設定しよう！</h2>
+            <h2 class="text-xl font-semibold mb-4">ToDoを3つ設定しよう！</h2>
             <div class="input-group">
                 <label for="todo-input-1">ToDo 1:</label>
                 <input type="text" id="todo-input-1" placeholder="例：牛乳を買う">
@@ -182,6 +202,9 @@
         </div>
         
         <div id="message-area"></div>
+        <div id="reset-level-button-container">
+             <button id="reset-level-button">レベルをリセット</button>
+        </div>
     </div>
 
     <script type="module">
@@ -189,38 +212,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, getDocs, serverTimestamp, onSnapshot, limit, orderBy as firestoreOrderBy, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // ===================================================================================
-        // !!!!!! Firebase Firestore セキュリティルールに関する最重要事項 !!!!!!
-        // ===================================================================================
-        // このアプリが正しく動作するためには、FirebaseコンソールでFirestoreのセキュリティルールを
-        // 以下のように設定する必要があります。エラー「Missing or insufficient permissions」が
-        // 発生している場合、ほぼ確実にこのルール設定が原因です。
-        //
-        // Firestoreコンソール > Firestore Database > 「ルール」タブ を開いて、
-        // 以下のルールをコピー＆ペーストし、「公開」してください。
-        //
-        // rules_version = '2';
-        // service cloud.firestore {
-        //   match /databases/{database}/documents {
-        //     // ToDoアイテム用パス
-        //     // このアプリの const appId = 'default-todo-app-v2'; と一致させてください。
-        //     match /artifacts/default-todo-app-v2/users/{userId}/items/{itemId} {
-        //       allow read, write: if request.auth != null && request.auth.uid == userId;
-        //     }
-        //
-        //     // ユーザーデータ（レベル情報）用パス
-        //     // このアプリの const appId = 'default-todo-app-v2'; と一致させてください。
-        //     match /artifacts/default-todo-app-v2/users/{userId}/userData/profile {
-        //       allow read, write: if request.auth != null && request.auth.uid == userId;
-        //     }
-        //   }
-        // }
-        //
-        // 上記の 'default-todo-app-v2' の部分は、下の `const appId` の値と一致している必要があります。
-        // もし `const appId = firebaseConfig.projectId;` を使用している場合は、
-        // ルール内の 'default-todo-app-v2' もご自身の実際のプロジェクトIDに置き換えてください。
-        // ===================================================================================
 
         // 【重要】このfirebaseConfigオブジェクトは、ご自身のFirebaseプロジェクトの実際の値に置き換えてください。
         const firebaseConfig = {
@@ -232,16 +223,15 @@
             appId: "1:1014494559609:web:6a6295b32621f16b5883a8" 
         };
         
-        // Firestoreのパスで使用するappId (固定文字列)
         const appId = 'default-todo-app-v2'; 
         
-        // Firebaseアプリの初期化
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
         // DOM要素
         const levelDisplay = document.getElementById('level-display'); 
+        const resetLevelButton = document.getElementById('reset-level-button'); 
         const gifContainer = document.getElementById('gif-container');
         const inputContainer = document.getElementById('input-container');
         const todoListContainer = document.getElementById('todo-list-container');
@@ -252,7 +242,6 @@
         const todoItemsWrapper = document.getElementById('todo-items-wrapper');
         const messageArea = document.getElementById('message-area');
         
-        // 音声要素
         const bakiAudio = document.getElementById('baki-sound');
         const levelupAudio = document.getElementById('levelup-sound');
 
@@ -267,7 +256,6 @@
         // --- ユーザーデータ（レベル情報）関連 ---
         function getUserDataRef(userId) {
             const path = `/artifacts/${appId}/users/${userId}/userData/profile`;
-            console.log("Attempting to access user data path for rules check:", path); // パスをコンソールに出力
             return doc(db, path);
         }
 
@@ -286,7 +274,7 @@
                 });
             } catch (e) {
                 console.error("Error initializing user level: ", e);
-                messageArea.textContent = "ユーザーレベルの初期化に失敗。Firestoreのセキュリティルールを確認してください。エラー: " + e.message;
+                messageArea.textContent = "ユーザーレベルの初期化に失敗。Firestoreルール確認 Error: " + e.message;
             }
         }
         
@@ -306,10 +294,9 @@
                 }
             }, (error) => {
                 console.error("User data snapshot listener error:", error);
-                messageArea.textContent = "ユーザーデータの同期にエラー。Firestoreのセキュリティルールを確認してください。エラー: " + error.message;
+                messageArea.textContent = "ユーザーデータ同期エラー。Firestoreルール確認 Error: " + error.message;
             });
         }
-
 
         async function incrementUserLevel(userId) {
             const userDocRef = getUserDataRef(userId);
@@ -331,10 +318,34 @@
                 });
             } catch (e) {
                 console.error("Error incrementing user level: ", e);
-                messageArea.textContent = "レベルアップ処理に失敗しました。エラー: " + e.message;
+                messageArea.textContent = "レベルアップ処理失敗。 Error: " + e.message;
             }
         }
 
+        async function resetUserLevel(userId) { 
+            if (!userId) return;
+            if (!window.confirm("本当にレベルをリセットしますか？ (現在のレベルはLv.1に戻ります)")) {
+                return;
+            }
+            const userDocRef = getUserDataRef(userId);
+            try {
+                await setDoc(userDocRef, { level: 1, lastUpdate: serverTimestamp() });
+                console.log("User level reset to 1 for userId:", userId);
+                messageArea.textContent = 'レベルがリセットされました！';
+                setTimeout(() => messageArea.textContent = '', 3000); 
+            } catch (e) {
+                console.error("Error resetting user level: ", e);
+                messageArea.textContent = "レベルのリセットに失敗しました。Error: " + e.message;
+            }
+        }
+
+        resetLevelButton.addEventListener('click', () => { 
+            if (currentUserId) {
+                resetUserLevel(currentUserId);
+            } else {
+                messageArea.textContent = "ユーザー情報が読み込まれていません。";
+            }
+        });
 
         // --- サウンド再生関数 (m4aファイル用) ---
         function playBakiSound() {
@@ -358,7 +369,6 @@
             todoInput1.value = '';
             todoInput2.value = '';
             todoInput3.value = '';
-            messageArea.textContent = '';
             activeTodoDocId = null;
             activeTodoData = null;
             if (unsubscribeSnapshot) {
@@ -512,7 +522,7 @@
                     if (data.allCompleted) {
                         playLevelUpSound();
                         await incrementUserLevel(currentUserId); 
-                        messageArea.textContent = '全タスク完了！素晴らしい！次のToDoを設定しましょう。';
+                        messageArea.textContent = 'タスク完了おめです！次はなにを設定しよっかな^^'; 
                         
                         setTimeout(() => {
                             if (activeTodoData && activeTodoData.allCompleted) { 
