@@ -185,12 +185,13 @@
         const firebaseConfig = {
         apiKey: "AIzaSyBZ50Fx26xPbatggCCQ2o6rIoTe_cr2WPk", // 実際の値に置き換えてください
         authDomain: "todoapps-c32f3.firebaseapp.com", // 実際の値に置き換えてください
-        projectId: "odoapps-c32f3", // 実際の値に置き換えてください
+        projectId: "todoapps-c32f3", // 実際の値に置き換えてください
         storageBucket: "todoapps-c32f3.firebasestorage.app", // 実際の値に置き換えてください
         messagingSenderId: "1014494559609", // 実際の値に置き換えてください
         appId: "1:1014494559609:web:6a6295b32621f16b5883a8" // 実際の値に置き換えてください
+        };
 
-        const appId = 'default-todo-app-v2'
+        const appId = firebaseConfig.projectId;
         
         // Firebaseアプリの初期化
         const app = initializeApp(firebaseConfig);
