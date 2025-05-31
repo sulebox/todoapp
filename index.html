@@ -34,10 +34,17 @@
             text-align: center; /* コンテナ内で画像を中央寄せ */
         }
         #gif-container img {
-            display: inline-block; /* or block with margin auto */
-            max-width: 100%; /* GIFが大きすぎる場合に備える */
-            height: auto; /* アスペクト比を維持 */
+            display: inline-block; 
+            max-width: 100%; 
+            height: 300px; /* GIFの縦幅を300pxに指定 */
+            object-fit: contain; /* アスペクト比を保ちつつコンテナ内に収める */
             border-radius: 0.5rem; /* rounded-lg */
+        }
+        #level-display {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            color: #F2994A; /* アクセントオレンジ */
+            margin-bottom: 1rem;
         }
         .input-group {
             margin-bottom: 1rem; /* mb-4 */
@@ -129,7 +136,7 @@
             font-size: 1.75rem; /* text-2xl */
             font-weight: 700; /* font-bold */
             color: #2F2F2F; 
-            margin-bottom: 1.5rem; /* mb-6 */
+            margin-bottom: 0.5rem; /* レベル表示のために少し詰める */
         }
         h2 {
             font-size: 1.25rem; /* text-xl */
@@ -145,6 +152,7 @@
 
     <div class="app-container">
         <h1>プヨンのToDoアプリ</h1>
+        <div id="level-display">Lv. 1</div>
 
         <div id="gif-container">
             <img id="puyon-gif" src="https://sulebox.github.io/todoapp/puyon.gif" alt="応援キャラクター">
@@ -180,21 +188,52 @@
         // Firebase SDKのインポート
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, addDoc, collection, query, getDocs, serverTimestamp, onSnapshot, limit, orderBy as firestoreOrderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, getDocs, serverTimestamp, onSnapshot, limit, orderBy as firestoreOrderBy, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // ===================================================================================
+        // !!!!!! Firebase Firestore セキュリティルールに関する最重要事項 !!!!!!
+        // ===================================================================================
+        // このアプリが正しく動作するためには、FirebaseコンソールでFirestoreのセキュリティルールを
+        // 以下のように設定する必要があります。エラー「Missing or insufficient permissions」が
+        // 発生している場合、ほぼ確実にこのルール設定が原因です。
+        //
+        // Firestoreコンソール > Firestore Database > 「ルール」タブ を開いて、
+        // 以下のルールをコピー＆ペーストし、「公開」してください。
+        //
+        // rules_version = '2';
+        // service cloud.firestore {
+        //   match /databases/{database}/documents {
+        //     // ToDoアイテム用パス
+        //     // このアプリの const appId = 'default-todo-app-v2'; と一致させてください。
+        //     match /artifacts/default-todo-app-v2/users/{userId}/items/{itemId} {
+        //       allow read, write: if request.auth != null && request.auth.uid == userId;
+        //     }
+        //
+        //     // ユーザーデータ（レベル情報）用パス
+        //     // このアプリの const appId = 'default-todo-app-v2'; と一致させてください。
+        //     match /artifacts/default-todo-app-v2/users/{userId}/userData/profile {
+        //       allow read, write: if request.auth != null && request.auth.uid == userId;
+        //     }
+        //   }
+        // }
+        //
+        // 上記の 'default-todo-app-v2' の部分は、下の `const appId` の値と一致している必要があります。
+        // もし `const appId = firebaseConfig.projectId;` を使用している場合は、
+        // ルール内の 'default-todo-app-v2' もご自身の実際のプロジェクトIDに置き換えてください。
+        // ===================================================================================
+
+        // 【重要】このfirebaseConfigオブジェクトは、ご自身のFirebaseプロジェクトの実際の値に置き換えてください。
         const firebaseConfig = {
-        apiKey: "AIzaSyBZ50Fx26xPbatggCCQ2o6rIoTe_cr2WPk", // 実際の値に置き換えてください
-        authDomain: "todoapps-c32f3.firebaseapp.com", // 実際の値に置き換えてください
-        projectId: "todoapps-c32f3", // 実際の値に置き換えてください
-        storageBucket: "todoapps-c32f3.firebasestorage.app", // 実際の値に置き換えてください
-        messagingSenderId: "1014494559609", // 実際の値に置き換えてください
-        appId: "1:1014494559609:web:6a6295b32621f16b5883a8" // 実際の値に置き換えてください
+            apiKey: "AIzaSyBZ50Fx26xPbatggCCQ2o6rIoTe_cr2WPk", 
+            authDomain: "todoapps-c32f3.firebaseapp.com", 
+            projectId: "todoapps-c32f3", 
+            storageBucket: "todoapps-c32f3.firebasestorage.app", 
+            messagingSenderId: "1014494559609", 
+            appId: "1:1014494559609:web:6a6295b32621f16b5883a8" 
         };
-
-        // Firestoreのパスで使用するappId (固定文字列に変更)
-        // ★★★重要★★★ Firestoreのセキュリティルールが /artifacts/default-todo-app-v2/... を
-        // 許可するように設定されていることを確認してください。
-        const appId = 'default-todo-app-v2';
+        
+        // Firestoreのパスで使用するappId (固定文字列)
+        const appId = 'default-todo-app-v2'; 
         
         // Firebaseアプリの初期化
         const app = initializeApp(firebaseConfig);
@@ -202,6 +241,7 @@
         const auth = getAuth(app);
 
         // DOM要素
+        const levelDisplay = document.getElementById('level-display'); 
         const gifContainer = document.getElementById('gif-container');
         const inputContainer = document.getElementById('input-container');
         const todoListContainer = document.getElementById('todo-list-container');
@@ -216,11 +256,85 @@
         const bakiAudio = document.getElementById('baki-sound');
         const levelupAudio = document.getElementById('levelup-sound');
 
-
-        let currentUserId = null; // 匿名認証のUIDを保持
+        let currentUserId = null; 
         let activeTodoDocId = null;
         let activeTodoData = null;
         let unsubscribeSnapshot = null;
+        let unsubscribeUserSnapshot = null; 
+
+        const MAX_LEVEL = 999;
+
+        // --- ユーザーデータ（レベル情報）関連 ---
+        function getUserDataRef(userId) {
+            const path = `/artifacts/${appId}/users/${userId}/userData/profile`;
+            console.log("Attempting to access user data path for rules check:", path); // パスをコンソールに出力
+            return doc(db, path);
+        }
+
+        async function initializeUserLevel(userId) {
+            const userDocRef = getUserDataRef(userId);
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const userDoc = await transaction.get(userDocRef);
+                    if (!userDoc.exists()) {
+                        transaction.set(userDocRef, { level: 1, lastUpdate: serverTimestamp() });
+                        console.log("User level initialized to 1 for userId:", userId);
+                    } else {
+                        const currentLevel = userDoc.data().level || 1;
+                        levelDisplay.textContent = `Lv. ${currentLevel}`;
+                    }
+                });
+            } catch (e) {
+                console.error("Error initializing user level: ", e);
+                messageArea.textContent = "ユーザーレベルの初期化に失敗。Firestoreのセキュリティルールを確認してください。エラー: " + e.message;
+            }
+        }
+        
+        function setupUserSnapshotListener(userId) {
+            if (unsubscribeUserSnapshot) {
+                unsubscribeUserSnapshot();
+            }
+            const userDocRef = getUserDataRef(userId);
+            unsubscribeUserSnapshot = onSnapshot(userDocRef, (doc) => {
+                if (doc.exists()) {
+                    const userData = doc.data();
+                    const currentLevel = userData.level || 1;
+                    levelDisplay.textContent = `Lv. ${currentLevel}`;
+                } else {
+                    levelDisplay.textContent = `Lv. 1`; 
+                    initializeUserLevel(userId); 
+                }
+            }, (error) => {
+                console.error("User data snapshot listener error:", error);
+                messageArea.textContent = "ユーザーデータの同期にエラー。Firestoreのセキュリティルールを確認してください。エラー: " + error.message;
+            });
+        }
+
+
+        async function incrementUserLevel(userId) {
+            const userDocRef = getUserDataRef(userId);
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const userDoc = await transaction.get(userDocRef);
+                    if (!userDoc.exists()) {
+                        transaction.set(userDocRef, { level: 2, lastUpdate: serverTimestamp() }); 
+                        console.log("User level set to 2 for new user on first completion.");
+                    } else {
+                        const currentLevel = userDoc.data().level || 1;
+                        if (currentLevel < MAX_LEVEL) {
+                            transaction.update(userDocRef, { level: currentLevel + 1, lastUpdate: serverTimestamp() });
+                            console.log("User level incremented to", currentLevel + 1);
+                        } else {
+                            console.log("User already at max level.");
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Error incrementing user level: ", e);
+                messageArea.textContent = "レベルアップ処理に失敗しました。エラー: " + e.message;
+            }
+        }
+
 
         // --- サウンド再生関数 (m4aファイル用) ---
         function playBakiSound() {
@@ -301,8 +415,6 @@
 
         // --- Firestore処理 ---
         function getTodosCollectionPath(userId) {
-            // Firestoreのセキュリティルールに合わせたパス構造
-            // /artifacts/{appId}/users/{userId}/{your_collection_name}
             return `/artifacts/${appId}/users/${userId}/items`;
         }
         
@@ -391,7 +503,7 @@
             if (!currentUserId || !docId) return;
 
             const todoDocRef = doc(db, getTodosCollectionPath(currentUserId), docId);
-            unsubscribeSnapshot = onSnapshot(todoDocRef, (snapshot) => {
+            unsubscribeSnapshot = onSnapshot(todoDocRef, async (snapshot) => { 
                 if (snapshot.exists()) {
                     const data = snapshot.data();
                     activeTodoData = data; 
@@ -399,6 +511,7 @@
 
                     if (data.allCompleted) {
                         playLevelUpSound();
+                        await incrementUserLevel(currentUserId); 
                         messageArea.textContent = '全タスク完了！素晴らしい！次のToDoを設定しましょう。';
                         
                         setTimeout(() => {
@@ -450,12 +563,14 @@
             if (user) {
                 currentUserId = user.uid; 
                 console.log("認証成功。UserID:", currentUserId); 
+                await initializeUserLevel(currentUserId); 
+                setupUserSnapshotListener(currentUserId); 
                 await loadLatestTodoSet(currentUserId);
             } else {
                 console.log("未認証状態。匿名認証を開始します。"); 
+                if (unsubscribeUserSnapshot) unsubscribeUserSnapshot(); 
                 try {
                     await signInAnonymously(auth);
-                    // onAuthStateChangedが再度呼ばれるので、ここでは何もしない
                 } catch (error) {
                     console.error("匿名認証に失敗:", error);
                     messageArea.textContent = "認証に失敗しました。アプリを利用できません。";
